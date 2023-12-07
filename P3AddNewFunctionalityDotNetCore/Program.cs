@@ -63,7 +63,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 var supportedCultures = new[] { "en-GB", "en-US", "en", "fr-FR", "fr" };
-var localizationOptions = new RequestLocalizationOptions().SetDefaultCulture(supportedCultures[0])
+var localizationOptions = new RequestLocalizationOptions().SetDefaultCulture(supportedCultures[2])
     .AddSupportedCultures(supportedCultures.ToArray())
     .AddSupportedUICultures(supportedCultures);
 app.UseRequestLocalization(localizationOptions);
