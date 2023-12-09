@@ -7,25 +7,58 @@ using P3AddNewFunctionalityDotNetCore.Models;
 using System.Collections.Generic;
 using System.Globalization;
 using Xunit;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.ComponentModel.DataAnnotations;
 
 namespace P3AddNewFunctionalityDotNetCore.Tests
 {
     public class ProductServiceTests
     {
 
-        static List<string> validityResult(ProductViewModel product)
+        //static List<string> validityResult(ProductViewModel product)
+        //{
+        //    var mockCart = Mock.Of<ICart>();
+        //    var mockProductRepository = Mock.Of<IProductRepository>();
+        //    var mockOrderRepository = Mock.Of<IOrderRepository>();
+        //    var mockLocalizer = Mock.Of<IStringLocalizer<ProductService>>();
+        //    var productService = new ProductService(
+        //        mockCart,
+        //        mockProductRepository,
+        //        mockOrderRepository,
+        //        mockLocalizer
+        //    );
+        //    var modelState = productService.CheckProductModelErrors(product);
+        //    return modelState;
+        //}
+
+        public static ModelStateDictionary validityResult(ProductViewModel product)
         {
-            var mockCart = Mock.Of<ICart>();
-            var mockProductRepository = Mock.Of<IProductRepository>();
-            var mockOrderRepository = Mock.Of<IOrderRepository>();
-            var mockLocalizer = Mock.Of<IStringLocalizer<ProductService>>();
-            var productService = new ProductService(
-                mockCart,
-                mockProductRepository,
-                mockOrderRepository,
-                mockLocalizer
-            );
-            return productService.CheckProductModelErrors(product);
+            var modelState = new ModelStateDictionary();
+
+            // Création du contexte de validation
+            var validationContext = new ValidationContext(product, null, null);
+
+            // Liste pour collecter les résultats de la validation
+            var validationResults = new List<ValidationResult>();
+
+            // Vérification des annotations de DataAnnotation sur le modèle ProductViewModel
+            bool isValid = Validator.TryValidateObject(product, validationContext, validationResults, true);
+
+            // Si le modèle n'est pas valide, ajoutez les erreurs de validation au ModelStateDictionary
+            if (!isValid)
+            {
+                foreach (var validationResult in validationResults)
+                {
+                    // Pour chaque erreur, ajoutez-la au ModelState avec un clé appropriée
+                    // Ici, MemberNames est une collection de noms de propriétés liées à cette erreur de validation
+                    foreach (var memberName in validationResult.MemberNames)
+                    {
+                        modelState.AddModelError(memberName, validationResult.ErrorMessage);
+                    }
+                }
+            }
+
+            return modelState;
         }
 
         [Fact]
